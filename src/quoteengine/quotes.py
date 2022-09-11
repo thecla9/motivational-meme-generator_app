@@ -19,3 +19,4 @@ class QuoteModel:
             str: string representation of the object
         """
         return f"{self.body} - {self.author}"
+        
