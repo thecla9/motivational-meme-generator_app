@@ -7,7 +7,7 @@ A simple Python application project to build a "meme generator" – a multimedia
 1. Clone the project using:
 
 ```sh
-git clone https://github.com/thecla9/Motivational-meme-generator-Thecla-1.git
+git clone https://github.com/thecla9/Motivational-meme-generator-app.git
 ```
 
 2. Create a virtual environment and install the dependencies by running:
