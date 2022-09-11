@@ -157,7 +157,7 @@ class CSVIngestor(IngestorInterface):
 
 
 class Ingestor(IngestorInterface):
-    """Load quotes from txt, docx, pdf and csv files and create QuoteModel objects"""
+    """Load quotes from txt, docx, pdf and csv files and create QuoteModel objects."""
 
     @classmethod
     def parse(cls, path: str) -> List[QuoteModel]:
