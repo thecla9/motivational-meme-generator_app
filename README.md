@@ -1,309 +1,87 @@
-# Motivational meme generator app
+# motivational-meme-generator_app
 
-A simple Python application project to build a "meme generator" – a multimedia application to dynamically generate memes, including an image with an overlaid quote, using a commandline interface and a graphical interface. The commandline interface saves the memes locally to a disk while the graphical inteface is served with the Flask web framework.
+## Udacity - Intermediate Python Nanodegree
 
-## Getting started
+## Starter Code Overview
 
-1. Clone the project using:
+We've provided some code and data to get you started. Sample quotes and images of Xander the pup in `src/_data/`.
 
-```sh
-git clone https://github.com/thecla9/Motivational-meme-generator-app.git
+There's also a basic flask server which will consume your modules and make it usable through a web interface. The main code for this flask service is in `app.py`, templates are in `templates/` and generated images should be saved to `static/`. You'll need to install the flask dependency with `pip install flask` and you can run the server with `python3 app.py`.
+
+## Your Tasks
+
+Be sure to follow the project rubric to ensure your submission passes review.
+
+### Quote Engine Module
+
+The Quote Engine Module is responsible for ingesting many types of files that contain quotes. A quote contains a body and an author (e.g. "this is a quote body" - Author). This module will be composed of many classes and demonstrate your understanding of complex inheritance, abstract classes, classmethods, strategy objects and other fundamental programming principles.
+
+Review rubric for specific details.
+
+#### Quote Format
+
+Example quotes are provided in a variety of files, take a moment to review the file formats in `./_data/SimpleLines` and `./_data/DogQuotes`. Your task is to design a system to extract each quote line-by-line from these files.
+
+#### Ingestors
+
+An abstract base class, `IngestorInterface` should define two methods with the following class method signatures:
+
+```python3
+def can_ingest(cls, path) -> boolean
+def parse(cls, path: str) -> List[QuoteModel]
 ```
 
-2. Create a virtual environment and install the dependencies by running:
+Separate strategy objects should realize `IngestorInterface` for each file type (csv, docx, pdf, txt).
 
-```sh
-pip install -r requirements.txt
-```
+A final `Ingestor` class should realize the `IngestorInterface` abstract base class and encapsulate your helper classes. It should implement logic to select the appropriate helper for a given file based on filetype.
 
-Before you continue ensure that `Xpdf` is also installed in your computer. It contains the pdftotext utility which is used in the project but not contained in the dependencies list. Visit this [link](https://www.xpdfreader.com/) for more information.
+### Meme Engine Module
 
-3. To use the CLI:
+The Meme Engine Module is responsible for manipulating and drawing text onto images. It will reinforce your understanding of object-oriented thinking while demonstrating your skill using a more advanced third party library for image manipulation.
 
-```sh
-$ python3 meme.py -h
+Review rubric for specific details.
 
-usage: meme.py [-h] [-path PATH] [-body BODY] [-author AUTHOR]
 
-Generate a motivational meme
+#### The MemeEngine class
+The class is responsible for:
+1. loading an image using Pillow (PIL)
+2. resizing the image so the width is at most 500px and the height is scaled proportionally
+3. add a quote body and a quote author to the image
+4. saving the manipulated image
+5. the class must implement this instance method signature which returns the path to the manipulated image `make_meme(self, img_path, text, author, width=500) -> str`
 
-optional arguments:
-  -h, --help      show this help message and exit
-  -path PATH      path to the meme image
-  -body BODY      the body of the quote
-  -author AUTHOR  the author of the quote
-```
 
-or run the command below:
+### Package your Application
 
-```sh
-python3 meme.py
-```
+Larger, complex systems need an interface for users to interact with. We'll package the project as a command line tool and as a simple web service.
 
-to generate a random meme
+#### Create a Command Line Interface tool
 
-4. To use the web interface, run:
+The project contains a simple cli app starter code in `meme.py`. This file contains `@TODO` tasks for you to complete. The utility can be which can be run from the terminal by invoking `python3 meme.py`
 
-```sh
-export FLASK_APP=app.py
-```
+The script must take three _optional_ CLI arguments:
 
-```
-flask run
-```
+- `--body` a string quote body
+- `--author` a string quote author
+- `--path` an image path
 
-### Development mode with Flask
+The script returns a path to a generated image.
+If any argument is not defined, a random selection is used.
 
-For development purposes, make sure to add the following variables:
+#### Complete the Flask app
 
-```sh
-export FLASK_DEBUG=True
-export FLASK_ENV=development
-```
+The project contains a flask app starter code in `app.py`. This file contains `@TODO` tasks for you to complete.
 
-and run:
+The app uses the Quote Engine Module and Meme Generator Modules to generate a random captioned image.
 
-```sh
-flask run --reload
-```
+It uses the `requests` package to fetch an image from a user submitted URL.
 
-for hot reloads whenever you make changes to the code.
+The flask server must run with no errors
 
-Once the server starts, visit [this link](http://127.0.0.1:5000) using your favorite browser.
+## Before You Submit
 
-## Modules and dependencies
+Take a moment to ensure your submission is ready for review:
 
-The project is made up of two modules and several dependencies.
-
-### Dependencies
-
-1. `Flask` - to build the web interface. Visit this [link](https://flask.palletsprojects.com/en/2.1.x/) for more information.
-2. `Pillow` - for manipulating images. Visit this [link](https://pillow.readthedocs.io/en/stable/) for more information.
-3. `pandas` - for extracting text content from csv documents. Visit this [link](https://pandas.pydata.org/) for more information.
-4. `python-docx` - for extracting text content from docx documents. Visit this [link](https://python-docx.readthedocs.io/en/latest/) for more information.
-
-### Modules
-
-1. `quoteengine` module - deals with extracting and parsing quotes from txt, docx, pdf and csv documents.
-
-Contains the `ingestor` and `quote` submodules.
-
-- `ingestor`
-  `Ingestor` class: extract text content (quotes) from documents. Documents supported include txt, pdf, docx and csv.
-  **Methods**: _parse(path: str)_ - parses the contents in the document referenced in the `path `. Returns a list of `QuoteModel` objects.
-
-**Example**:
-
-```sh
-from quoteengine.ingestor import Ingestor
-
-path = '/_data/SimpleLines/SimpleLines.csv'
-quotes = Ingestor().parse(path)
-print(type(quotes))
-
->>> <class 'list'>
-```
-
-- `quote`
-  `QuoteModel` class: instantiate quote objects.
-
-**Attributes**: _body (str), author(str)_
-`body` - The quote's text
-`author` - The quote's author
-
-**Example**:
-
-```sh
-from quoteengine.quote import QuoteModel
-
-body = 'To be or not to be'
-author = 'Wiseman'
-
-quote = QuoteModel(body, author)
-print(quote)
-
->>> "To be or not to be" - Wiseman
-```
-
-2. `memegenerator` module - deals with the creation and storing of the memes.
-
-Contains the `memeengine` submodule.
-
-- `memeengine`
-  `MemeEngine` class: create memes from an image and a quote.
-
-**Attributes**: _output_dir (str)_
-
-**Methods**: _make_meme(img_path: str, text: str, author: str, width: int)_ - creates a meme using an image specified in `img_path` and a quote from `text` and `author`. The meme is resized to size `width`. Returns the path of the created meme in the disk (for CLI) or the relative path to the static files folder (for GUI).
-
-**Example**:
-
-```sh
-from memegenerator.memeengine import MemeEngine
-
-output_directory = 'memes'
-
-img_path = '/_data/photos/dog/xander_1.jpg'
-body = 'To be or not to be'
-author = 'Wiseman'
-
-quote = MemeEngine(output_directory).make_meme(img_path, body, author, 300)
-print(quote)
-
->>> "/tmp/xander_1_meme.jpg"
-```
-
-# Motivational meme generator app
-
-A simple Python application project to build a "meme generator" – a multimedia application to dynamically generate memes, including an image with an overlaid quote, using a commandline interface and a graphical interface. The commandline interface saves the memes locally to a disk while the graphical inteface is served with the Flask web framework.
-
-## Getting started
-
-1. Clone the project using:
-
-```sh
-git clone https://github.com/thecla9/Motivational-meme-generator-Thecla-1.git
-```
-
-2. Create a virtual environment and install the dependencies by running:
-
-```sh
-pip install -r requirements.txt
-```
-
-Before you continue ensure that `Xpdf` is also installed in your computer. It contains the pdftotext utility which is used in the project but not contained in the dependencies list. Visit this [link](https://www.xpdfreader.com/) for more information.
-
-3. To use the CLI:
-
-```sh
-$ python3 meme.py -h
-
-usage: meme.py [-h] [-path PATH] [-body BODY] [-author AUTHOR]
-
-Generate a motivational meme
-
-optional arguments:
-  -h, --help      show this help message and exit
-  -path PATH      path to the meme image
-  -body BODY      the body of the quote
-  -author AUTHOR  the author of the quote
-```
-
-or run the command below:
-
-```sh
-python3 meme.py
-```
-
-to generate a random meme
-
-4. To use the web interface, run:
-
-```sh
-export FLASK_APP=app.py
-```
-
-```
-flask run
-```
-
-### Development mode with Flask
-
-For development purposes, make sure to add the following variables:
-
-```sh
-export FLASK_DEBUG=True
-export FLASK_ENV=development
-```
-
-and run:
-
-```sh
-flask run --reload
-```
-
-for hot reloads whenever you make changes to the code.
-
-Once the server starts, visit [this link](http://127.0.0.1:5000) using your favorite browser.
-
-## Modules and dependencies
-
-The project is made up of two modules and several dependencies.
-
-### Dependencies
-
-1. `Flask` - to build the web interface. Visit this [link](https://flask.palletsprojects.com/en/2.1.x/) for more information.
-2. `Pillow` - for manipulating images. Visit this [link](https://pillow.readthedocs.io/en/stable/) for more information.
-3. `pandas` - for extracting text content from csv documents. Visit this [link](https://pandas.pydata.org/) for more information.
-4. `python-docx` - for extracting text content from docx documents. Visit this [link](https://python-docx.readthedocs.io/en/latest/) for more information.
-
-### Modules
-
-1. `quoteengine` module - deals with extracting and parsing quotes from txt, docx, pdf and csv documents.
-
-Contains the `ingestor` and `quote` submodules.
-
-- `ingestor`
-  `Ingestor` class: extract text content (quotes) from documents. Documents supported include txt, pdf, docx and csv.
-  **Methods**: _parse(path: str)_ - parses the contents in the document referenced in the `path `. Returns a list of `QuoteModel` objects.
-
-**Example**:
-
-```sh
-from quoteengine.ingestor import Ingestor
-
-path = '/_data/SimpleLines/SimpleLines.csv'
-quotes = Ingestor().parse(path)
-print(type(quotes))
-
->>> <class 'list'>
-```
-
-- `quote`
-  `QuoteModel` class: instantiate quote objects.
-
-**Attributes**: _body (str), author(str)_
-`body` - The quote's text
-`author` - The quote's author
-
-**Example**:
-
-```sh
-from quoteengine.quote import QuoteModel
-
-body = 'To be or not to be'
-author = 'Wiseman'
-
-quote = QuoteModel(body, author)
-print(quote)
-
->>> "To be or not to be" - Wiseman
-```
-
-2. `memegenerator` module - deals with the creation and storing of the memes.
-
-Contains the `memeengine` submodule.
-
-- `memeengine`
-  `MemeEngine` class: create memes from an image and a quote.
-
-**Attributes**: _output_dir (str)_
-
-**Methods**: _make_meme(img_path: str, text: str, author: str, width: int)_ - creates a meme using an image specified in `img_path` and a quote from `text` and `author`. The meme is resized to size `width`. Returns the path of the created meme in the disk (for CLI) or the relative path to the static files folder (for GUI).
-
-**Example**:
-
-```sh
-from memegenerator.memeengine import MemeEngine
-
-output_directory = 'memes'
-
-img_path = '/_data/photos/dog/xander_1.jpg'
-body = 'To be or not to be'
-author = 'Wiseman'
-
-quote = MemeEngine(output_directory).make_meme(img_path, body, author, 300)
-print(quote)
-
->>> "/tmp/xander_1_meme.jpg"
-```
+1. You have reviewed each item in the rubric and verified you have completed it successfully.
+2. The requirements.txt file contains all required dependencies. (TIP: delete your virtual environment and re-instantiate to verify it is complete)
+3. You have pushed all changes to your github repo on the master branch.
